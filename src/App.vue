@@ -1,36 +1,53 @@
 <template>
   <v-app>
-    <v-app-bar app>
-      <v-toolbar-title class="headline text-uppercase">
-        <span>Vuetify</span>
-        <span class="font-weight-light">MATERIAL DESIGN</span>
-      </v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-btn
-        text
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-      >
-        <span class="mr-2">Latest Release</span>
-      </v-btn>
-    </v-app-bar>
-
+    <header-component :navLinks="navLinks"></header-component>
+    <transition name="fade" mode="out-in" @after-leave="afterLeave">
+      <router-view></router-view>
+    </transition>
     <v-content>
-      <HelloWorld/>
+      <v-container>
+        <button @click="getBand">getBand</button>
+        <br>
+        <button @click="getSongName">getSongName</button>
+        <div>{{band}}</div>
+        <div>{{song}}</div>
+        <div>{{userDara}}</div>
+      </v-container>
     </v-content>
+    <footer-component :navLinks="navLinks" :showNav="false"></footer-component>
   </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld';
+import HeaderComponent from "./components/header";
+import FooterComponent from "./components/footer";
+
+import { mapActions, mapGetters } from "vuex";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    HelloWorld,
+    FooterComponent,
+    HeaderComponent
   },
-  data: () => ({
-    //
-  }),
+  computed: {
+    ...mapGetters(["navLinks", "band", "song", "songMod"]),
+    ...mapGetters('user', {
+      userDara: 'user',
+    })
+  },
+  data: () => ({}),
+  methods: {
+    afterLeave() {
+      this.$root.$emit("triggerScroll");
+    },
+    getBand() {
+      this.$store.dispatch("user/changeInfo");
+    },
+    getSongName(){
+      this.$store.dispatch("user/getSongNameUser");
+      this.$store.dispatch("getSongNameStore");
+    }
+  }
 };
 </script>
